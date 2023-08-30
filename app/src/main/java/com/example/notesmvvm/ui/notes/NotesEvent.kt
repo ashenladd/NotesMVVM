@@ -7,4 +7,5 @@ sealed class NotesEvent{
     data class OnChangeNoteOrderBy(val noteOrderBy: NoteOrderBy):NotesEvent()
     data class OnDelete(val note: Note):NotesEvent()
     object OnRestore :NotesEvent()
+    object ToggleOrderSection : NotesEvent()
 }

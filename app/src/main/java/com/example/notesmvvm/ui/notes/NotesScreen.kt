@@ -1,11 +1,16 @@
 package com.example.notesmvvm.ui.notes
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
@@ -24,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
@@ -44,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.notesmvvm.domain.util.NoteOrderBy
 import com.example.notesmvvm.ui.notes.component.NoteItem
+import com.example.notesmvvm.ui.notes.component.OrderByMenu
 import com.example.notesmvvm.ui.notes.component.OrderTypeMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,12 +79,17 @@ fun NotesScreen(
         },
         topBar = {
             MediumTopAppBar(
-                title = { Text(text = "My Notes", style = MaterialTheme.typography.headlineMedium) },
+                title = {
+                    Text(
+                        text = "My Notes",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription ="Search Note"
+                            contentDescription = "Search Note"
                         )
                     }
                 },
@@ -100,7 +109,10 @@ fun NotesScreen(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = {  }) {
+                IconButton(onClick = {
+                    Log.d("Toogle Order", "is visible? ${stateItems.isOrderSectionVisible}")
+                    viewModel.onEvent(NotesEvent.ToggleOrderSection)
+                }) {
                     Icon(
                         imageVector = Icons.Default.List,
                         contentDescription = "Filter List",
@@ -129,6 +141,22 @@ fun NotesScreen(
                             NotesEvent.OnChangeNoteOrderBy(it)
                         )
                     })
+            }
+            AnimatedVisibility(
+                visible = stateItems.isOrderSectionVisible,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut()
+            ) {
+                OrderByMenu(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp, horizontal = 16.dp),
+                    noteOrderBy = stateItems.noteOrderBy,
+                    onOrderChange = {
+                        viewModel.onEvent(NotesEvent.OnChangeNoteOrderBy(it))
+                        viewModel.onEvent(NotesEvent.ToggleOrderSection)
+                    }
+                )
             }
             LazyVerticalGrid(
                 modifier = Modifier

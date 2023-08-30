@@ -51,6 +51,12 @@ class NotesViewModel @Inject constructor(
                     recentlyDeletedNote = null
                 }
             }
+
+            is NotesEvent.ToggleOrderSection -> {
+                _stateItems.value = stateItems.value.copy(
+                    isOrderSectionVisible = !stateItems.value.isOrderSectionVisible
+                )
+            }
         }
     }
 
@@ -60,7 +66,7 @@ class NotesViewModel @Inject constructor(
             .onEach { notes ->
                 _stateItems.value = stateItems.value.copy(
                     notes = notes,
-                    noteOrderBy = noteOrderBy
+                    noteOrderBy = noteOrderBy,
                 )
             }.launchIn(viewModelScope)
     }

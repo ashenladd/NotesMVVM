@@ -7,9 +7,9 @@ sealed class NoteOrderBy(val orderType: OrderType){
 
     fun rewriteOrderType(orderType: OrderType):NoteOrderBy{
         return when(this){
-            is Title -> NoteOrderBy.Title(orderType)
-            is Date -> NoteOrderBy.Date(orderType)
-            is Recent -> NoteOrderBy.Recent(orderType)
+            is Title -> Title(orderType)
+            is Date -> Date(orderType)
+            is Recent -> Recent(orderType)
         }
     }
 }

@@ -10,10 +10,10 @@ import com.example.notesmvvm.domain.model.Note
     exportSchema = false
 )
 
-abstract class NoteDatabase : RoomDatabase(){
-    abstract val noteDao:NotesDao
+abstract class NoteDatabase : RoomDatabase() {
+    abstract val noteDao: NotesDao
 
-    companion object{
+    companion object {
         const val DATABASE_NAME = "db_note"
     }
 }

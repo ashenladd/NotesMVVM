@@ -1,12 +1,12 @@
 package com.example.notesmvvm.ui.notes
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.List
@@ -33,6 +36,7 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -40,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -49,6 +54,8 @@ import com.example.notesmvvm.domain.util.NoteOrderBy
 import com.example.notesmvvm.ui.notes.component.NoteItem
 import com.example.notesmvvm.ui.notes.component.OrderByMenu
 import com.example.notesmvvm.ui.notes.component.OrderTypeMenu
+import com.example.notesmvvm.ui.util.Screen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,14 +67,21 @@ fun NotesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollState = rememberScrollState()
 
+//    LaunchedEffect(
+//        key1 = stateItems.isLoading,
+//    ) {
+//        delay(5000)
+//        viewModel.onEvent(NotesEvent.ToggleLoading)
+//    }
     Scaffold(modifier = Modifier
         .fillMaxSize()
         .nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = { navController.navigate(Screen.AddEditScreen.route) },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.primary
             ) {
@@ -101,7 +115,6 @@ fun NotesScreen(
                 .padding(4.dp)
                 .padding(paddingValues)
                 .fillMaxSize()
-
         ) {
             Row(
                 modifier = Modifier
@@ -110,7 +123,6 @@ fun NotesScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = {
-                    Log.d("Toogle Order", "is visible? ${stateItems.isOrderSectionVisible}")
                     viewModel.onEvent(NotesEvent.ToggleOrderSection)
                 }) {
                     Icon(
@@ -150,7 +162,10 @@ fun NotesScreen(
                 OrderByMenu(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 16.dp),
+                        .padding(
+                            vertical = 4.dp,
+                            horizontal = 16.dp
+                        ),
                     noteOrderBy = stateItems.noteOrderBy,
                     onOrderChange = {
                         viewModel.onEvent(NotesEvent.OnChangeNoteOrderBy(it))
@@ -165,14 +180,28 @@ fun NotesScreen(
                 columns = GridCells.Fixed(2),
             ) {
                 items(stateItems.notes) { note ->
-                    NoteItem(note = note,
-                        modifier = Modifier.clickable { },
+                    NoteItem(
+                        note = note,
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(Screen.AddEditScreen.route + "?noteId=${note.id}")
+                            }
+                            .padding(8.dp),
                         onDeleteClick = {
                             viewModel.onEvent(NotesEvent.OnDelete(note))
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Note deleted",
+                                    actionLabel = "Undo"
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.onEvent(NotesEvent.OnRestore)
+                                }
+                            }
                         })
                 }
             }
         }
-
     }
+
 }

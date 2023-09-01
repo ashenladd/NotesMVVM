@@ -8,4 +8,5 @@ sealed class NotesEvent{
     data class OnDelete(val note: Note):NotesEvent()
     object OnRestore :NotesEvent()
     object ToggleOrderSection : NotesEvent()
+    object ToggleLoading : NotesEvent()
 }

@@ -7,5 +7,6 @@ import com.example.notesmvvm.domain.util.OrderType
 data class NotesState(
     val notes: List<Note> = emptyList(),
     val noteOrderBy: NoteOrderBy = NoteOrderBy.Recent(OrderType.Descending),
-    val isOrderSectionVisible:Boolean = false
+    val isOrderSectionVisible: Boolean = false,
+    val isLoading: Boolean = true,
 )

@@ -4,10 +4,10 @@ import com.example.notesmvvm.domain.model.Note
 import com.example.notesmvvm.domain.repository.NoteRepository
 
 class GetNoteByIdUseCase(
-    private val repository: NoteRepository
+    private val repository: NoteRepository,
 ) {
 
-    suspend operator fun invoke(id:Int):Note?{
+    suspend operator fun invoke(id: Int): Note? {
         return repository.getNoteById(id)
     }
 }

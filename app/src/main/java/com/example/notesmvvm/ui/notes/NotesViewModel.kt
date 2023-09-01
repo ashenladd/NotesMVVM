@@ -57,6 +57,12 @@ class NotesViewModel @Inject constructor(
                     isOrderSectionVisible = !stateItems.value.isOrderSectionVisible
                 )
             }
+
+            is NotesEvent.ToggleLoading ->{
+                _stateItems.value = stateItems.value.copy(
+                    isLoading = !stateItems.value.isLoading
+                )
+            }
         }
     }
 

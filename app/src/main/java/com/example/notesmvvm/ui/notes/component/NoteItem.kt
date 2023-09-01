@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,25 +30,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.example.notesmvvm.domain.model.Note
+import com.example.notesmvvm.ui.notes.util.addEmptyLines
 
 @Composable
 fun NoteItem(
     note: Note,
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 10.dp,
     onDeleteClick: () -> Unit,
+    cornerShape: Dp = 8.dp
 ) {
     Column(
         modifier = modifier
     ) {
         Box(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.onSurface)
-                .clip(RoundedCornerShape(cornerRadius))
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
+                .background(MaterialTheme.colorScheme.secondaryContainer,
+                    RoundedCornerShape(cornerShape)
+                )
+                .fillMaxSize()
 
         ) {
             Column(
@@ -59,7 +62,7 @@ fun NoteItem(
                     )
             ) {
                 Text(
-                    text = note.content,
+                    text = note.content.addEmptyLines(10),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
                     maxLines = 10,
@@ -81,6 +84,7 @@ fun NoteItem(
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(weight = 1f,fill = false)
             )
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(
@@ -110,9 +114,8 @@ fun NoteItem(
             )
         }
     }
-
-
 }
+
 
 
 @Preview
